@@ -1,0 +1,13 @@
+{
+  "name": "todo-hiking",
+  "version": "1.0.0",
+  "description": "To-Do List untuk persiapan mendaki gunung",
+  "main": "index.html",
+  "scripts": {
+    "start": "serve .",
+    "build": "echo 'No build needed'"
+  },
+  "keywords": ["todo", "hiking", "javascript"],
+  "author": "Your Name",
+  "license": "MIT"
+}

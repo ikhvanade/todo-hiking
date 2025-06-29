@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List Mendaki Gunung</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .add-form {
+            padding: 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .form-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-select {
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+            font-size: 14px;
+            padding: 8px 12px;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            font-size: 14px;
+            padding: 8px 12px;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .categories-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            min-height: 400px;
+        }
+
+        .category-section {
+            margin-bottom: 0;
+            border-right: 1px solid #e9ecef;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .category-section:last-child {
+            border-right: none;
+        }
+
+        .category-content {
+            flex: 1;
+            overflow-y: auto;
+            max-height: 500px;
+        }
+
+        .category-header {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .category-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .category-title h3 {
+            margin: 0;
+            font-size: 1.3em;
+            color: #2c3e50;
+        }
+
+        .category-icon {
+            font-size: 1.5em;
+        }
+
+        .pribadi-icon {
+            color: #3498db;
+        }
+
+        .kelompok-icon {
+            color: #e67e22;
+        }
+
+        .category-stats {
+            font-size: 0.9em;
+            color: #6c757d;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .stat-item {
+            background: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            border: 1px solid #e9ecef;
+        }
+
+        .todo-item {
+            display: flex;
+            align-items: center;
+            padding: 20px 30px;
+            border-bottom: 1px solid #e9ecef;
+            transition: background-color 0.3s;
+        }
+
+        .todo-item:hover {
+            background: #f8f9fa;
+        }
+
+        .todo-item.completed {
+            background: #d4edda;
+            opacity: 0.8;
+        }
+
+        .todo-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #667eea;
+            border-radius: 50%;
+            margin-right: 15px;
+            cursor: pointer;
+            position: relative;
+            background: white;
+            transition: all 0.3s;
+        }
+
+        .todo-checkbox.completed {
+            background: #667eea;
+            border-color: #667eea;
+        }
+
+        .todo-checkbox.completed::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .todo-text {
+            flex: 1;
+            font-size: 16px;
+            color: #2c3e50;
+            transition: all 0.3s;
+        }
+
+        .todo-text.completed {
+            text-decoration: line-through;
+            color: #6c757d;
+        }
+
+        .todo-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .empty-category {
+            padding: 30px;
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        .overall-stats {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            text-align: center;
+            border-top: 1px solid #e9ecef;
+            color: #6c757d;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+            text-align: center;
+        }
+
+        .stat-card h4 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #28a745;
+            transition: width 0.3s;
+        }
+
+        .mountain-icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+            }
+            
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .form-input {
+                min-width: 100%;
+            }
+            
+            .todo-item {
+                padding: 15px 20px;
+            }
+
+            .category-header {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+
+            .category-stats {
+                align-self: stretch;
+                justify-content: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .categories-container {
+                grid-template-columns: 1fr;
+                gap: 1px;
+            }
+
+            .category-section {
+                border-right: none;
+                border-bottom: 1px solid #e9ecef;
+            }
+
+            .category-section:last-child {
+                border-bottom: none;
+            }
+
+            .category-content {
+                max-height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><span class="mountain-icon">🏔️</span>To-Do List Mendaki Gunung</h1>
+            <p>Persiapan lengkap untuk petualangan mendaki yang aman</p>
+        </div>
+
+        <div class="add-form">
+            <div class="input-group">
+                <input type="text" id="newItem" class="form-input" placeholder="Tambahkan item persiapan baru..." required>
+                <select id="category" class="form-select" required>
+                    <option value="pribadi">👤 Barang Pribadi</option>
+                    <option value="kelompok">👥 Barang Kelompok</option>
+                </select>
+                <button id="addBtn" class="btn btn-primary">Tambah</button>
+            </div>
+        </div>
+
+        <div class="categories-container">
+            <!-- Kategori Barang Pribadi -->
+            <div class="category-section">
+                <div class="category-header">
+                    <div class="category-title">
+                        <span class="category-icon pribadi-icon">👤</span>
+                        <h3>Barang Pribadi</h3>
+                    </div>
+                    <div class="category-stats">
+                        <div class="stat-item" id="pribadiStats">
+                            <strong>0</strong> / 0 selesai
+                        </div>
+                        <button id="resetPribadi" class="btn btn-secondary" style="display: none;">Reset</button>
+                    </div>
+                </div>
+
+                <div class="category-content" id="pribadiContent">
+                    <div class="empty-category">
+                        Belum ada barang pribadi dalam daftar
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kategori Barang Kelompok -->
+            <div class="category-section">
+                <div class="category-header">
+                    <div class="category-title">
+                        <span class="category-icon kelompok-icon">👥</span>
+                        <h3>Barang Kelompok</h3>
+                    </div>
+                    <div class="category-stats">
+                        <div class="stat-item" id="kelompokStats">
+                            <strong>0</strong> / 0 selesai
+                        </div>
+                        <button id="resetKelompok" class="btn btn-secondary" style="display: none;">Reset</button>
+                    </div>
+                </div>
+
+                <div class="category-content" id="kelompokContent">
+                    <div class="empty-category">
+                        Belum ada barang kelompok dalam daftar
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistik Keseluruhan -->
+        <div class="overall-stats">
+            <h4>📊 Ringkasan Persiapan</h4>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h4>👤 Barang Pribadi</h4>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="pribadiProgress" style="width: 0%"></div>
+                    </div>
+                    <p id="pribadiSummary">0 dari 0 item</p>
+                </div>
+                <div class="stat-card">
+                    <h4>👥 Barang Kelompok</h4>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="kelompokProgress" style="width: 0%"></div>
+                    </div>
+                    <p id="kelompokSummary">0 dari 0 item</p>
+                </div>
+            </div>
+
+            <p id="totalProgress" style="margin-top: 20px; font-size: 1.1em; color: #2c3e50;">
+                <strong>Total Progress: 0 / 0 item selesai</strong>
+            </p>
+
+            <button id="resetAll" class="btn btn-secondary" style="display: none; margin-top: 15px;">Reset Semua</button>
+        </div>
+    </div>
+
+    <script>
+        // Data dan state management
+        let hikingTodos = [
+            {id: 1, item: 'Cek kondisi cuaca', completed: false, category: 'pribadi'},
+            {id: 2, item: 'Siapkan tas carrier', completed: false, category: 'pribadi'},
+            {id: 3, item: 'Bawa air minum 2-3 liter', completed: false, category: 'pribadi'},
+            {id: 4, item: 'Siapkan sepatu hiking', completed: false, category: 'pribadi'},
+            {id: 5, item: 'Bawa jaket dan pakaian hangat', completed: false, category: 'pribadi'},
+            {id: 6, item: 'Tenda untuk 4 orang', completed: false, category: 'kelompok'},
+            {id: 7, item: 'Kompor portable + gas', completed: false, category: 'kelompok'},
+            {id: 8, item: 'Perlengkapan P3K', completed: false, category: 'kelompok'}
+        ];
+        let nextId = 9;
+
+        // Fungsi untuk menyimpan data ke localStorage
+        function saveData() {
+            const data = {
+                hikingTodos: hikingTodos,
+                nextId: nextId
+            };
+            try {
+                // Note: localStorage tidak tersedia di Claude.ai artifacts
+                // Data akan disimpan dalam memory selama sesi berlangsung
+                console.log('Data saved:', data);
+            } catch (error) {
+                console.log('Storage not available, using memory storage');
+            }
+        }
+
+        // Fungsi untuk memuat data dari localStorage
+        function loadData() {
+            try {
+                // Note: localStorage tidak tersedia di Claude.ai artifacts
+                // Menggunakan data default yang sudah ada
+                console.log('Using default data');
+            } catch (error) {
+                console.log('Storage not available, using default data');
+            }
+        }
+
+        // Fungsi untuk mengelompokkan todos berdasarkan kategori
+        function groupTodosByCategory(todos) {
+            const grouped = {pribadi: [], kelompok: []};
+            todos.forEach(todo => {
+                const category = todo.category || 'pribadi';
+                grouped[category].push(todo);
+            });
+            return grouped;
+        }
+
+        // Fungsi untuk menghitung statistik per kategori
+        function getCategoryStats(todos, category) {
+            const categoryTodos = todos.filter(todo => todo.category === category);
+            const total = categoryTodos.length;
+            const completed = categoryTodos.filter(todo => todo.completed).length;
+            return {total, completed, remaining: total - completed};
+        }
+
+        // Fungsi untuk menambah item baru
+        function addItem() {
+            const newItemInput = document.getElementById('newItem');
+            const categorySelect = document.getElementById('category');
+            
+            const itemText = newItemInput.value.trim();
+            if (!itemText) return;
+
+            const newItem = {
+                id: nextId++,
+                item: itemText,
+                completed: false,
+                category: categorySelect.value
+            };
+
+            hikingTodos.push(newItem);
+            newItemInput.value = '';
+            saveData();
+            renderTodos();
+        }
+
+        // Fungsi untuk toggle status completed
+        function toggleItem(itemId) {
+            const todo = hikingTodos.find(t => t.id === itemId);
+            if (todo) {
+                todo.completed = !todo.completed;
+                saveData();
+                renderTodos();
+            }
+        }
+
+        // Fungsi untuk menghapus item
+        function deleteItem(itemId) {
+            if (confirm('Hapus item ini?')) {
+                hikingTodos = hikingTodos.filter(todo => todo.id !== itemId);
+                saveData();
+                renderTodos();
+            }
+        }
+
+        // Fungsi untuk reset berdasarkan kategori
+        function resetCategory(category) {
+            if (confirm(`Reset semua item ${category}?`)) {
+                hikingTodos.forEach(todo => {
+                    if (todo.category === category) {
+                        todo.completed = false;
+                    }
+                });
+                saveData();
+                renderTodos();
+            }
+        }
+
+        // Fungsi untuk reset semua item
+        function resetAll() {
+            if (confirm('Reset semua item menjadi belum selesai?')) {
+                hikingTodos.forEach(todo => {
+                    todo.completed = false;
+                });
+                saveData();
+                renderTodos();
+            }
+        }
+
+        // Fungsi untuk render todos
+        function renderTodos() {
+            const groupedTodos = groupTodosByCategory(hikingTodos);
+            const pribadiStats = getCategoryStats(hikingTodos, 'pribadi');
+            const kelompokStats = getCategoryStats(hikingTodos, 'kelompok');
+
+            // Render kategori pribadi
+            renderCategory('pribadi', groupedTodos.pribadi, pribadiStats);
+            
+            // Render kategori kelompok
+            renderCategory('kelompok', groupedTodos.kelompok, kelompokStats);
+
+            // Update statistik keseluruhan
+            updateOverallStats(pribadiStats, kelompokStats);
+        }
+
+        // Fungsi untuk render kategori
+        function renderCategory(category, todos, stats) {
+            const contentId = category + 'Content';
+            const statsId = category + 'Stats';
+            const resetBtnId = 'reset' + category.charAt(0).toUpperCase() + category.slice(1);
+            
+            const content = document.getElementById(contentId);
+            const statsElement = document.getElementById(statsId);
+            const resetBtn = document.getElementById(resetBtnId);
+
+            // Update stats
+            statsElement.innerHTML = `<strong>${stats.completed}</strong> / ${stats.total} selesai`;
+            
+            // Show/hide reset button
+            resetBtn.style.display = stats.completed > 0 ? 'inline' : 'none';
+
+            // Render todos
+            if (todos.length === 0) {
+                content.innerHTML = `
+                    <div class="empty-category">
+                        Belum ada barang ${category} dalam daftar
+                    </div>
+                `;
+            } else {
+                content.innerHTML = todos.map(todo => `
+                    <div class="todo-item ${todo.completed ? 'completed' : ''}">
+                        <button class="todo-checkbox ${todo.completed ? 'completed' : ''}" 
+                                onclick="toggleItem(${todo.id})"></button>
+                        
+                        <div class="todo-text ${todo.completed ? 'completed' : ''}">
+                            ${escapeHtml(todo.item)}
+                        </div>
+                        
+                        <div class="todo-actions">
+                            <button class="btn btn-danger" onclick="deleteItem(${todo.id})">Hapus</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Fungsi untuk update statistik keseluruhan
+        function updateOverallStats(pribadiStats, kelompokStats) {
+            const totalItems = pribadiStats.total + kelompokStats.total;
+            const totalCompleted = pribadiStats.completed + kelompokStats.completed;
+
+            // Update progress bars
+            const pribadiProgress = document.getElementById('pribadiProgress');
+            const kelompokProgress = document.getElementById('kelompokProgress');
+            
+            pribadiProgress.style.width = pribadiStats.total > 0 ? 
+                (pribadiStats.completed / pribadiStats.total * 100) + '%' : '0%';
+            kelompokProgress.style.width = kelompokStats.total > 0 ? 
+                (kelompokStats.completed / kelompokStats.total * 100) + '%' : '0%';
+
+            // Update summaries
+            document.getElementById('pribadiSummary').textContent = 
+                `${pribadiStats.completed} dari ${pribadiStats.total} item`;
+            document.getElementById('kelompokSummary').textContent = 
+                `${kelompokStats.completed} dari ${kelompokStats.total} item`;
+
+            // Update total progress
+            document.getElementById('totalProgress').innerHTML = 
+                `<strong>Total Progress: ${totalCompleted} / ${totalItems} item selesai</strong>`;
+
+            // Show/hide reset all button
+            const resetAllBtn = document.getElementById('resetAll');
+            resetAllBtn.style.display = totalCompleted > 0 ? 'inline' : 'none';
+        }
+
+        // Fungsi helper untuk escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            renderTodos();
+
+            // Auto-focus pada input
+            const input = document.getElementById('newItem');
+            if (input) {
+                input.focus();
+            }
+
+            // Add item event listeners
+            document.getElementById('addBtn').addEventListener('click', addItem);
+            
+            document.getElementById('newItem').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    addItem();
+                }
+            });
+
+            // Reset button event listeners
+            document.getElementById('resetPribadi').addEventListener('click', function() {
+                resetCategory('pribadi');
+            });
+
+            document.getElementById('resetKelompok').addEventListener('click', function() {
+                resetCategory('kelompok');
+            });
+
+            document.getElementById('resetAll').addEventListener('click', resetAll);
+
+            // Animasi saat checkbox diklik
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('todo-checkbox')) {
+                    e.target.style.transform = 'scale(0.9)';
+                    setTimeout(() => {
+                        e.target.style.transform = 'scale(1)';
+                    }, 100);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
